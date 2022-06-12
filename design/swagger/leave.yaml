@@ -1,0 +1,485 @@
+openapi: 3.0.0
+servers:
+  - url: localhost:8000
+info:
+  description: "test"
+  version: "1.0.0"
+  title: "Attendance System"
+  contact:
+    email: "maan.paul1996@gmail.com"
+paths:
+  /leave/request:
+    get:
+      summary: "Get the leaves"
+      requestBody:
+        description: "Get the leave request"
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/request_get"
+      responses:
+        200:
+          description: "error when validation failes"
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/single_success_response"
+                  - $ref: "#/components/schemas/multi_success_response"
+        204:
+          description: "error when validation failes"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/no_request_error_response"
+        403:
+          description: "error when validation failes"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/validation_error_response"
+        500:
+          description: "error when software exception occures"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/se_error_response"
+    post:
+      summary: "Make a leave request"
+      requestBody:
+        description: "method to make the leave request"
+        required: True
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/request_post"
+      responses:
+        200:
+          description: "error when validation failes"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/post_single_success_response"
+        204:
+          description: "error when validation failes"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/no_request_error_response"
+        403:
+          description: "error when validation failes"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/validation_error_response"
+        500:
+          description: "error when software exception occures"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/se_error_response"
+    patch:
+      summary: "Cancel the request"
+      requestBody:
+        description: "method to cancel the leave request"
+        required: True
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/request_patch"
+      responses:
+        200:
+          description: "error when validation failes"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/patch_single_success_response"
+        204:
+          description: "error when validation failes"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/no_request_error_response"
+        403:
+          description: "error when validation failes"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/validation_error_response"
+        500:
+          description: "error when software exception occures"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/se_error_response"
+  
+  /leave/verify:
+    get:
+      summary: "Get the leaves"
+      requestBody:
+        description: "Get the leave request"
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/request_get"
+      responses:
+        200:
+          description: "error when validation failes"
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/single_success_response"
+                  - $ref: "#/components/schemas/multi_success_response"
+        204:
+          description: "error when validation failes"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/no_request_error_response"
+        403:
+          description: "error when validation failes"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/validation_error_response"
+        500:
+          description: "error when software exception occures"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/se_error_response"
+    patch:
+      summary: "Cancel the request"
+      requestBody:
+        description: "method to cancel the leave request"
+        required: True
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/request_patch"
+      responses:
+        200:
+          description: "error when validation failes"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/patch_single_success_response"
+        204:
+          description: "error when validation failes"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/no_request_error_response"
+        403:
+          description: "error when validation failes"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/validation_error_response"
+        500:
+          description: "error when software exception occures"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/se_error_response"
+
+components:
+  schemas:
+    request_get: 
+      type: object
+      properties:
+        status:
+          type: string
+          description: "status of the request"
+          enum: 
+            - initiated
+            - decline
+            - canceled
+            - approve
+        limit:
+          type: integer
+          description: "limit the response count"
+          example: 10
+        skip:
+          type: integer
+          description: "skip the first few reponse"
+          example: 5
+    request_patch: 
+      type: object
+      properties:
+        status:
+          type: string
+          description: "status of the request"
+          enum: 
+            - canceled
+        comment:
+          type: string
+          description: "comment of the status change request"
+          example: "Leave"
+    request_post: 
+      type: object
+      properties:
+        from_date:
+          type: string
+          description: "from date leave needed"
+          example: "2022-02-02"
+        to_date:
+          type: string
+          description: "to date till leave needed"
+          example: "2022-02-02"
+        reason:
+          type: string
+          pattern: "[a-zA-z.0-9 ]+"
+          example: "Request does not exist"
+
+    validation_error_response:
+      type: object
+      properties:
+        status:
+          type: string
+          example: failed
+        reason:
+          type: string
+          example: "request id not given"
+
+    se_error_response:
+      type: object
+      properties:
+        status:
+          type: string
+          example: failed
+        reason:
+          type: string
+          example: "Internal server error"
+
+    no_request_error_response:
+      type: object
+      properties:
+        status:
+          type: string
+          example: failed
+        reason:
+          type: string
+          example: "Request does not exist"
+
+    single_success_response:
+      type: object
+      properties:
+        data:
+          type: object
+          description: "details of the request"
+          properties:
+            id:
+              type: integer
+              description: "request id"
+              example: 1
+            usernme:
+              type: string
+              description: "user name the request belongs to"
+              example: user1
+            from_date:
+              type: string
+              description: "from date leave needed"
+              example: "2022-02-02"
+            to_date:
+              type: string
+              description: "to date till leave needed"
+              example: "2022-02-02"
+            status:
+              type: string
+              description: "status of the request"
+              enum: 
+                - initiated
+                - decline
+                - canceled
+                - approve
+            reason:
+              type: string
+              description: "reason of the request"
+              example: "Leave"
+            comment:
+              type: string
+              description: "comment of the status change request"
+              example: "Leave"
+            created_datetime:
+              type: string
+              description: "date when request was raised"
+              example: "2021-02-03"
+            created_by:
+              type: string
+              description: "request raised by"
+              example: "2021-02-03"
+            modified_datetime:
+              type: string
+              description: "date when request was modified"
+              example: "user1"
+            modified_by:
+              type: string
+              description: "request modifed by"
+              example: "admin"
+        total_page:
+          type: integer
+          example: "1"
+        has_previous_page:
+          type: boolean
+          example: False
+        has_next_page:
+          type: boolean
+          example: False
+    multi_success_response:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            description: "details of the request"
+            properties:
+              id:
+                type: integer
+                description: "request id"
+                example: 1
+              usernme:
+                type: string
+                description: "user name the request belongs to"
+                example: user1
+              from_date:
+                type: string
+                description: "from date leave needed"
+                example: user1
+              to_date:
+                type: string
+                description: "to date till leave needed"
+                example: user1
+              status:
+                type: string
+                description: "status of the request"
+                enum: 
+                  - initiated
+                  - decline
+                  - canceled
+                  - approve
+              reason:
+                type: string
+                description: "reason of the request"
+                example: "Leave"
+              comment:
+                type: string
+                description: "comment of the status change request"
+                example: "Leave"
+              created_datetime:
+                type: string
+                description: "date when request was raised"
+                example: "2021-02-03"
+              created_by:
+                type: string
+                description: "request raised by"
+                example: "2021-02-03"
+              modified_datetime:
+                type: string
+                description: "date when request was modified"
+                example: "user1"
+              modified_by:
+                type: string
+                description: "request modifed by"
+                example: "admin"
+        total_page:
+          type: integer
+          example: "1"
+        has_previous_page:
+          type: boolean
+          example: False
+        has_next_page:
+          type: boolean
+          example: False
+
+    post_single_success_response:
+      type: object
+      properties:
+        data:
+          type: object
+          description: "details of the request"
+          properties:
+            id:
+              type: integer
+              description: "request id"
+              example: 1
+            usernme:
+              type: string
+              description: "user name the request belongs to"
+              example: user1
+            from_date:
+              type: string
+              description: "from date leave needed"
+              example: "2022-02-02"
+            to_date:
+              type: string
+              description: "to date till leave needed"
+              example: "2022-02-02"
+            status:
+              type: string
+              description: "status of the request"
+              enum: 
+                - initiated
+                - decline
+                - canceled
+                - approve
+            reason:
+              type: string
+              description: "reason of the request"
+              example: "Leave"
+            created_datetime:
+              type: string
+              description: "date when request was raised"
+              example: "2021-02-03"
+
+    patch_single_success_response:
+      type: object
+      properties:
+        data:
+          type: object
+          description: "details of the request"
+          properties:
+            id:
+              type: integer
+              description: "request id"
+              example: 1
+            usernme:
+              type: string
+              description: "user name the request belongs to"
+              example: user1
+            from_date:
+              type: string
+              description: "from date leave needed"
+              example: "2022-02-02"
+            to_date:
+              type: string
+              description: "to date till leave needed"
+              example: "2022-02-02"
+            status:
+              type: string
+              description: "status of the request"
+              enum: 
+                - initiated
+                - decline
+                - canceled
+                - approve
+            reason:
+              type: string
+              description: "reason of the request"
+              example: "Leave"
+            comment:
+                type: string
+                description: "comment of the status change request"
+                example: "Leave"
+            created_datetime:
+              type: string
+              description: "date when request was raised"
+              example: "2021-02-03"
+            modified_datetime:
+              type: string
+              description: "date when request was modified"
+              example: "2021-02-03"
